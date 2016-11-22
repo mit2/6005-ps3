@@ -53,7 +53,7 @@ public class SimpleBoardTest {
     }
     
     @Test
-    public void testGetBoardState_MixedStateCharSet() {
+    public void testGetBoardState_MixedStateCharSet() { // Invalid + Valid States
      // Impossible by Board design implementation to have invalid cell states
     }
     
@@ -63,13 +63,14 @@ public class SimpleBoardTest {
     @Test
     public void testChangeCellState_Empty() {
         Board b = new SimpleBoard(10, 10, 4);        
-        assertFalse(b.changeCellState(0, 0, '\0'));   // as 'empty' or any invalid state     
+        assertFalse(b.changeCellState(0, 0, '\0'));   // as 'empty' or any invalid state 
+        assertFalse(b.changeCellState(0, 0, 'K'));   // as invalid state
     }
     
     @Test
     // Server doing changes in a cell
     public void testChangeCellState_ValidStateCharSet() {
-        Character [] validCellState = {'_',' ','F','B'};    // size 12
+        Character [] validCellState = {'_',' ','F','B'};    // size 4
         Board b = new SimpleBoard(10, 10, 4);
         
         for (int i = 0; i < validCellState.length; i++) {
@@ -90,11 +91,11 @@ public class SimpleBoardTest {
     }
     
     @Test
-    public void testChangeCellState_InvalidCellPosition() {
+    public void testChangeCellState_ValidCellPosition() {
         Board b = new SimpleBoard(10, 10, 4);
-        assertFalse(b.changeCellState(11, 11, 'F')); // out of Board above limit
-        assertFalse(b.changeCellState(-1, -1, 'F')); // out of Board bellow limit
-        assertFalse(b.changeCellState(-1, 1, 'F')); 
+        //assertFalse(b.changeCellState(11, 11, 'F')); // out of Board above limit --> testCase shoud only test specs 
+        //assertFalse(b.changeCellState(-1, -1, 'F')); // out of Board bellow limit
+        assertTrue(b.changeCellState(1, 1, 'F')); 
         
     }
     
@@ -107,7 +108,7 @@ public class SimpleBoardTest {
     }
     
     @Test
-    public void testGetCellState_ValidState() {
+    public void testGetCellState_ValidState_ValidPosition() {
         Board b = new SimpleBoard(10, 10, 4);
         b.changeCellState(0, 0, 'F');
         Character ch = b.getCellState(0, 0);

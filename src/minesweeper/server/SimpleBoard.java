@@ -12,8 +12,8 @@ import org.junit.Assert;
 public class SimpleBoard implements Board{
     private final int numRows, numCols, numBombs;
     private final Character [][] board;
-    private final Character [] validCellState = {'_',' ','F','B'};  // check size 4: cellStates.length
-    //private final List<Character> validCellState = new ArrayList<Character>(Arrays.asList(cellStates));
+    private final Character [] validCellState = {'_',' ','F','B'};  // check size 4: cellStates.length, soon will be sorted for rep-invariant checking purposes 
+    //private final List<Character> validCellState = new ArrayList<Character>(Arrays.asList(cellStates)); // not used, as list will not resized
     
     // Rep invariant
     // board numBoms >= 0 && numBoms <= initSize
@@ -33,6 +33,7 @@ public class SimpleBoard implements Board{
      * Construct initial Board state.
      * @param cols number of Board columns
      * @param rows number of Board rows
+     * @param bombs number of Bombs to be inserted
      */
     public SimpleBoard(int rows, int cols, int bombs){
         Assert.assertTrue("ASSERTION ERROR ON INPUT PARAMS! invalid rows", rows > 0); // validate board rows size
@@ -49,10 +50,10 @@ public class SimpleBoard implements Board{
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[0].length; j++) {
                 if(randomBombInsert() && (insertBombs < numBombs)){ //  you should assign each square to contain a bomb with probability .25 and otherwise no bomb.
-                    board[i][j] = 'B'; 
+                    board[i][j] = validCellState[3]; 
                     insertBombs++;                    
                 }
-                else board[i][j] = '_';               
+                else board[i][j] = validCellState[0];               
             }
         }
 
@@ -86,8 +87,8 @@ public class SimpleBoard implements Board{
         // traverse thru all board and check if each cell contain only validCellState
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[0].length; j++) {
-                if(Arrays.binarySearch(validCellState, board[i][j]) < 0) throw new AssertionError();                
-                if(board[i][j] == 'B') countBombs++; // count bombs
+                if(Arrays.binarySearch(validCellState, board[i][j]) < 0) throw new AssertionError(); // WORNING: validCellState is sorted!!!               
+                if(board[i][j] == 'B') countBombs++; // count bombs                
             }
         }
         
@@ -98,12 +99,13 @@ public class SimpleBoard implements Board{
     public String getBoardState() {
         // Best way is print cell state to std_out stream... will do later
         String boardContent = "";
-        if(board.length == 0) return boardContent;
+        Assert.assertTrue("ASSERTION ERROR ON 'BOARD' REP INVARIANT!", board.length > 0);
+        
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[0].length; j++) {
                 boardContent = boardContent.concat(board[i][j].toString()) + " ";
             }
-            boardContent = boardContent.substring(0, boardContent.length()-1);
+            boardContent = boardContent.substring(0, boardContent.length()-1);  // Eliminate last in the line empty space
             boardContent = boardContent + "\n";
         }
         return boardContent;
@@ -112,23 +114,28 @@ public class SimpleBoard implements Board{
     @Override
     public boolean changeCellState(int posX, int posY, char state) {
         // Any invalid position will fail change
-        if(posX < 0 || posX > numCols-1) return false;
-        if(posY < 0 || posY > numRows-1) return false;
-        
+        Assert.assertTrue("ASSERTION ERROR ON INPUT PARAMS!", posX >= 0 || posX <= numCols-1); // validate cell x pos
+        Assert.assertTrue("ASSERTION ERROR ON INPUT PARAMS!", posY >= 0 || posY <= numRows-1);
+                
         char oldState = board[posY][posX];
         char newState = state;
         
         // Any invalid state will fail change
-        if((Arrays.binarySearch(validCellState, newState) < 0) || (oldState == newState))return false;                                 
+        if((Arrays.binarySearch(validCellState, newState) < 0) || (oldState == newState)) return false;                                 
         else board[posY][posX] = newState;
                     
         checkRep();
        
+        Assert.assertEquals(Character.toString(newState), board[posY][posX].toString());// Asserting post-condition        
         return  board[posY][posX] == newState;
     }
 
     @Override
     public char getCellState(int posX, int posY) {
+        Assert.assertTrue("ASSERTION ERROR ON INPUT PARAMS!", posX >= 0 || posX <= numCols-1); // validate cell x pos
+        Assert.assertTrue("ASSERTION ERROR ON INPUT PARAMS!", posY >= 0 || posY <= numRows-1);
+        
+        Assert.assertTrue(Arrays.binarySearch(validCellState, board[posY][posX]) >= 0); // Asserting post-condition
         return board[posY][posX];
     }
     

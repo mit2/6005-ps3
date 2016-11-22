@@ -12,19 +12,21 @@ public interface Board {
      */
     public String getBoardState();
     
+    
     /**
      * Modifies cell state by replacing current state with 'new state'.
      * @param state new cell state.
-     * @param posX cell position in columns
-     * @param posY cell position in rows
+     * @param posX cell position in columns >= 0 and <= Board X size
+     * @param posY cell position in rows >= 0 and <= Board Y size
      * @return true if current cell state is changed to new state, otherwise false.
      */
     public boolean changeCellState(int posX, int posY, char state);
     
+    
     /**
-     * GEtting current Board cell state
-     * @param posX cell position in columns
-     * @param posY cell position in rows
+     * Getting current Board cell state
+     * @param posX cell position in columns >=0 and <= Board X size
+     * @param posY cell position in rows >=0 and <= Board Y size
      * @return character witch represent valid cell state
      */
     public char getCellState(int posX, int posY);
