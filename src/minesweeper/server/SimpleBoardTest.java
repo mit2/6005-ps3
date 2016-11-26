@@ -70,7 +70,7 @@ public class SimpleBoardTest {
     @Test
     // Server doing changes in a cell
     public void testChangeCellState_ValidStateCharSet() {
-        Character [] validCellState = {'_',' ','F','B'};    // size 4
+        Character [] validCellState = {'_',' ','F','1'};    // size 4
         Board b = new SimpleBoard(10, 10, 4);
         
         for (int i = 0; i < validCellState.length; i++) {

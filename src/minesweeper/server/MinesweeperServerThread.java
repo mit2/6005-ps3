@@ -46,7 +46,7 @@ public class MinesweeperServerThread implements Runnable{
             ) 
         {
             for (String line = in.readLine(); line != null; line = in.readLine()) {
-                String output = handleRequest(line);
+                String output = handleRequest(line);    // respond to the Client.
                 if (output != null) {
                     out.println(output);
                 }

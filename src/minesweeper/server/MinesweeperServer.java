@@ -6,7 +6,27 @@ import java.util.*;
 
 
 /**
- * TODO: thread safety argument goes here!
+ *  // System Thread safety argument
+    // (My Note: only analyze top-level objects, not their members)
+    // ----------------------
+    // The threads in the system are:
+    // - main thread accepting new connections
+    // - one thread per connected client, handling just that client
+    //
+    // The serverSocket object is confined to the main thread.
+    //
+    // The Socket object for a client is confined to that client's thread;
+    // the main thread loses its reference to the object right after starting
+    // the client thread.
+    //
+    // The MinesweeperServerThread object for client is confined to that client's thread, so it is thread safe.
+    //
+    // The Board object is sheared by all client threads, all accesses to 'board' happen within SimpleBoard methods,
+    // which are all guarded by SimpleBoard'S lock
+    //
+    // System.err is used by all threads for displaying error messages.
+    //
+    // No other shared mutable data.
  */
 public class MinesweeperServer {
     /**
@@ -17,8 +37,12 @@ public class MinesweeperServer {
     private final ServerSocket serverSocket;
     /**
      * True if the server should _not_ disconnect a client after a BOOM message.
-     */
+     */    
     private final boolean debug;
+    /**
+     * MineSweeper game board
+     */
+    private static SimpleBoard board = null;
 
     /**
      * Make a MinesweeperServer that listens for connections on port.
@@ -44,7 +68,7 @@ public class MinesweeperServer {
         }
     }
 
-    //was here handleConnection() & hadleRequest(); moved to MinesweeperServerThread ADT
+    //here was handleConnection() & hadleRequest(); moved to MinesweeperServerThread ADT
 
     /**
      * Start a MinesweeperServer using the given arguments.
@@ -150,8 +174,52 @@ public class MinesweeperServer {
      * @param port The network port on which the server should listen.
      */
     public static void runMinesweeperServer(boolean debug, File file, Integer sizeX, Integer sizeY, int port) throws IOException {
+        // Initialize MineSweeper board
+        BufferedReader in = null;
+        // Eclipse cmd-line argument:    --file .\src\minesweeper\server\testBoard.txt
+        if(file != null){                        
+            try {
+                in = new BufferedReader(new FileReader(file));                
+                String boardRow, numRows = null, numCols = null;
+                int line = 0; 
+                List<Integer> bombLocations = new ArrayList<Integer>(); // bombs location storage
+                
+                while ((boardRow = in.readLine()) != null) {
+                    //  get board size
+                    if(line == 0){
+                        numRows = boardRow.substring(0, 1);
+                        numCols = boardRow.substring(2);
+                    }
+                    // get bombs locations                    
+                    String[] boardRowNoSpaces = boardRow.split(" "); // Eliminate white spaces from the row
+                    for (int i = 0; i < boardRowNoSpaces.length; i++) {
+                        if(boardRowNoSpaces[i].charAt(0) == '1'){
+                            bombLocations.add(i);   // add X location
+                            bombLocations.add(line -1); // add Y location
+                        }
+                    }                    
+                    line++;
+                }
+                // init board
+                board = new SimpleBoard(Integer.parseInt(numRows), Integer.parseInt(numCols), 0);
+                // insert bombs
+                for (int i = 0; i < bombLocations.size()-1; i = i + 2) { // get bomb locations incrementing by 2, as i = X, i+1 = Y
+                    board.changeCellState(bombLocations.get(i), bombLocations.get(i + 1), '1');
+                }        
+            } catch(IOException e){
+                e.printStackTrace();
+            } finally {
+                if (in != null) {
+                    in.close();
+                }                
+            }
+        } else {
+            //init board from sizes*
+            board = new SimpleBoard(sizeY, sizeX, 0);
+        }
+        //System.out.println("Get board state!");
+        //System.out.println(board.getBoardState());
         
-        // TODO: Continue your implementation here.
         
         MinesweeperServer server = new MinesweeperServer(port, debug);
         server.serve();

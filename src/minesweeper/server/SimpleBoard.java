@@ -1,18 +1,19 @@
 package minesweeper.server;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.junit.Assert;
 
 /**
- * Ã Board represents a thread safe mutable 2D Array of character set {_, ,F,B} in multiplayer game Minesweeper.
+ * Ã Board represents a thread safe mutable 2D Array of character set {_, ,F,1} in multiplayer game Minesweeper.
  * @author win8
  *
  */
 public class SimpleBoard implements Board{
     private final int numRows, numCols, numBombs;
     private final Character [][] board;
-    private final Character [] validCellState = {'_',' ','F','B'};  // check size 4: cellStates.length, soon will be sorted for rep-invariant checking purposes 
+    private final Character [] validCellState = {'_',' ','F','1'};  // check size 4: cellStates.length, soon will be sorted for rep-invariant checking purposes 
     //private final List<Character> validCellState = new ArrayList<Character>(Arrays.asList(cellStates)); // not used, as list will not resized
     
     // Rep invariant
@@ -24,9 +25,20 @@ public class SimpleBoard implements Board{
     // Abstraction function
     // represents a grid of characters from set of valid characters.
     
-    // Thread safety argument
-    // ...
-    // ...
+    // Thread safety argument:
+    // --------------------------------------------------
+    //    This class is threadsafe because it has:
+    //    Thread safety argument with immutability:
+    //    - numRows, numCols, numBombs, board, validCellState are final
+    //    - 'board' points to a mutable char array, but that array is encapsulated
+    //      in this object, not shared with any other object or exposed to a client
+    //      
+    //    - 'validCellState' points to a mutable char array, but that array is encapsulated
+    //      in this object, not shared with any other object or exposed to a client
+    //
+    //    Thread safety argument with synchronization:  
+    //    - all accesses to 'board' happen within SimpleBoard methods,
+    //      which are all guarded by SimpleBoard'S lock
     
     
     /**
@@ -96,7 +108,7 @@ public class SimpleBoard implements Board{
     }
     
     @Override
-    public String getBoardState() {
+    public synchronized  String getBoardState() {
         // Best way is print cell state to std_out stream... will do later
         String boardContent = "";
         Assert.assertTrue("ASSERTION ERROR ON 'BOARD' REP INVARIANT!", board.length > 0);
@@ -112,7 +124,7 @@ public class SimpleBoard implements Board{
     }
 
     @Override
-    public boolean changeCellState(int posX, int posY, char state) {
+    public  synchronized boolean changeCellState(int posX, int posY, char state) {
         // Any invalid position will fail change
         Assert.assertTrue("ASSERTION ERROR ON INPUT PARAMS!", posX >= 0 || posX <= numCols-1); // validate cell x pos
         Assert.assertTrue("ASSERTION ERROR ON INPUT PARAMS!", posY >= 0 || posY <= numRows-1);
@@ -131,14 +143,11 @@ public class SimpleBoard implements Board{
     }
 
     @Override
-    public char getCellState(int posX, int posY) {
+    public  synchronized char getCellState(int posX, int posY) {
         Assert.assertTrue("ASSERTION ERROR ON INPUT PARAMS!", posX >= 0 || posX <= numCols-1); // validate cell x pos
         Assert.assertTrue("ASSERTION ERROR ON INPUT PARAMS!", posY >= 0 || posY <= numRows-1);
         
         Assert.assertTrue(Arrays.binarySearch(validCellState, board[posY][posX]) >= 0); // Asserting post-condition
         return board[posY][posX];
     }
-    
-    
-
 }

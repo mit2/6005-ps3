@@ -1,5 +1,7 @@
 package minesweeper.server;
 
+import java.util.ArrayList;
+
 /**
  * Board represents a thread safe mutable grid of characters in multi-player game 'Minesweeper'.
  * @author win8
@@ -8,7 +10,7 @@ package minesweeper.server;
 public interface Board {
     /**
      * 
-     * @return content of this Board.
+     * @return content of this Board as single string.
      */
     public String getBoardState();
     
@@ -29,6 +31,5 @@ public interface Board {
      * @param posY cell position in rows >=0 and <= Board Y size
      * @return character witch represent valid cell state
      */
-    public char getCellState(int posX, int posY);
-
+    public char getCellState(int posX, int posY);   
 }
