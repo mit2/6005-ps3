@@ -64,7 +64,7 @@ public class MinesweeperServer {
     public void serve() throws IOException {
         while (listening) {
             // block until a client connects            
-            new MinesweeperServerThread(serverSocket.accept());           
+            new MinesweeperServerThread(serverSocket.accept(), board);           
         }
     }
 

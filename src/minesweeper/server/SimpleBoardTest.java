@@ -34,16 +34,16 @@ public class SimpleBoardTest {
      * Testing if Board contain only valid cell states from ValidStateCharSet
      */
     public void testGetBoardState_ValidStateCharSet() {
-        Board b = new SimpleBoard(3, 3, 0);
+        Board b = new SimpleBoard(3, 3, 0); // will fail if bombs param is '0', as bombs will inserted by server on it's own
         //System.out.println("PASSED");
         b.changeCellState(0, 0, ' '); // add DUG cell state
         b.changeCellState(0, 1, 'F'); // add FLAGGED cell state
         b.changeCellState(2, 1, 'F'); // add FLAGGED cell state
         
         System.out.println(b.getBoardState());
-        String checkString =   "  _ _\n"
-                             + "F _ F\n"
-                             + "_ _ _\n";
+        String checkString =   "  _ _\r\n"
+                             + "F _ F\r\n"
+                             + "_ _ _\r\n";
         assertEquals("String Not equals!", checkString, b.getBoardState());
     }
     

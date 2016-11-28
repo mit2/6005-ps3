@@ -64,6 +64,8 @@ public class SimpleBoard implements Board{
                 if(randomBombInsert() && (insertBombs < numBombs)){ //  you should assign each square to contain a bomb with probability .25 and otherwise no bomb.
                     board[i][j] = validCellState[3]; 
                     insertBombs++;                    
+                } else if(randomBombInsert() && (insertBombs == numBombs)) { // random bomb insertion with no manual limit
+                    board[i][j] = validCellState[3];                    
                 }
                 else board[i][j] = validCellState[0];               
             }
@@ -118,7 +120,7 @@ public class SimpleBoard implements Board{
                 boardContent = boardContent.concat(board[i][j].toString()) + " ";
             }
             boardContent = boardContent.substring(0, boardContent.length()-1);  // Eliminate last in the line empty space
-            boardContent = boardContent + "\n";
+            boardContent = boardContent + "\r\n";
         }
         return boardContent;
     }
@@ -149,5 +151,15 @@ public class SimpleBoard implements Board{
         
         Assert.assertTrue(Arrays.binarySearch(validCellState, board[posY][posX]) >= 0); // Asserting post-condition
         return board[posY][posX];
+    }
+
+    
+    @Override
+    public int[] getBoardSize() {
+        int [] boardDim = new int[2];
+        boardDim[0] = numCols;
+        boardDim[1] = numRows;
+        
+        return boardDim;
     }
 }

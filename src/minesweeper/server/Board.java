@@ -31,5 +31,12 @@ public interface Board {
      * @param posY cell position in rows >=0 and <= Board Y size
      * @return character witch represent valid cell state
      */
-    public char getCellState(int posX, int posY);   
+    public char getCellState(int posX, int posY);
+    
+    
+    /**
+     * @return Board dimensions represented by columns-X size and rows-Y size
+     */
+    public int[] getBoardSize();
+    
 }
