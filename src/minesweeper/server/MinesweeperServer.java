@@ -35,6 +35,7 @@ public class MinesweeperServer {
     private final boolean listening = true;
     
     private static int connectedPlayers = 0;
+    private final static Object lock = new Object();
     
     private final ServerSocket serverSocket;
     /**
@@ -234,14 +235,20 @@ public class MinesweeperServer {
      * 
      * @return all active users, connected to server.
      */
-    public static int getConnectedPlayers(){
-        return connectedPlayers;
+    public  static int getConnectedPlayers(){
+        // synchronize only this part of server
+        synchronized(lock){
+            return connectedPlayers;
+        }        
     }
     
     /**
      * Decrease by 1 current number of active players.
      */
     public static void decreaseNumPlayers(){
-        connectedPlayers--;
+        // synchronize only this part of server
+        synchronized(lock){
+            connectedPlayers--;
+        }
     }
 }

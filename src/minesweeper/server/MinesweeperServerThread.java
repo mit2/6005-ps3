@@ -52,7 +52,7 @@ public class MinesweeperServerThread implements Runnable{
             out.println("Welcome to Minesweeper. Board: " + board.getBoardSize()[0] + " columns by " + board.getBoardSize()[1] + " rows."
                     + " Players: " + MinesweeperServer.getConnectedPlayers() + " including you. Type 'help' for help.\r\n");
             
-            // Handle clients queries duorent the Game
+            // Handle clients queries durent the Game
             for (String line = in.readLine(); line != null; line = in.readLine()) {
                 String output = handleRequest(line);    // respond to the Client.
                 if (output != null) {
@@ -80,7 +80,7 @@ public class MinesweeperServerThread implements Runnable{
              * My Note: it is impossible get wrong message from server by program design, only 'wrong' message can send user.
              */
             //return null; // ORIGINAL ACTION
-            return "WORNG COMMAND! Try 'help' to see witch commands is legal to use.\r\n";
+            return "WRONG COMMAND! Try 'help' to see witch commands is legal to use.\r\n";
             
         }
         String[] tokens = input.split(" ");
