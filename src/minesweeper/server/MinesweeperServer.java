@@ -34,6 +34,8 @@ public class MinesweeperServer {
      */
     private final boolean listening = true;
     
+    private static int connectedPlayers = 0;
+    
     private final ServerSocket serverSocket;
     /**
      * True if the server should _not_ disconnect a client after a BOOM message.
@@ -64,7 +66,10 @@ public class MinesweeperServer {
     public void serve() throws IOException {
         while (listening) {
             // block until a client connects            
-            new MinesweeperServerThread(serverSocket.accept(), board);           
+            new MinesweeperServerThread(serverSocket.accept(), board);
+                // mark down another new connected user;
+                connectedPlayers++;
+           
         }
     }
 
@@ -223,5 +228,20 @@ public class MinesweeperServer {
         
         MinesweeperServer server = new MinesweeperServer(port, debug);
         server.serve();
+    }
+    
+    /**
+     * 
+     * @return all active users, connected to server.
+     */
+    public static int getConnectedPlayers(){
+        return connectedPlayers;
+    }
+    
+    /**
+     * Decrease by 1 current number of active players.
+     */
+    public static void decreaseNumPlayers(){
+        connectedPlayers--;
     }
 }

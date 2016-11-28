@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.rmi.server.ServerCloneException;
 
 public class MinesweeperServerThread implements Runnable{
     /**
@@ -47,6 +48,11 @@ public class MinesweeperServerThread implements Runnable{
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             ) 
         {
+            // Hello message from server to user sent only once, immediately after the server connects to the user.          
+            out.println("Welcome to Minesweeper. Board: " + board.getBoardSize()[0] + " columns by " + board.getBoardSize()[1] + " rows."
+                    + " Players: " + MinesweeperServer.getConnectedPlayers() + " including you. Type 'help' for help.\r\n");
+            
+            // Handle clients queries duorent the Game
             for (String line = in.readLine(); line != null; line = in.readLine()) {
                 String output = handleRequest(line);    // respond to the Client.
                 if (output != null) {
@@ -65,6 +71,7 @@ public class MinesweeperServerThread implements Runnable{
     private String handleRequest(String input) {
         String regex = "(look)|(dig -?\\d+ -?\\d+)|(flag -?\\d+ -?\\d+)|"
                 + "(deflag -?\\d+ -?\\d+)|(help)|(bye)";
+        
         if ( ! input.matches(regex)) {
             // invalid input
             /**
@@ -88,6 +95,7 @@ public class MinesweeperServerThread implements Runnable{
         } else if (tokens[0].equals("bye")) {
             // 'bye' request
             // Terminates the connection with this client.
+            MinesweeperServer.decreaseNumPlayers();
             return null;
         } else {
             int x = Integer.parseInt(tokens[1]);
