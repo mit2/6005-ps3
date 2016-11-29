@@ -41,7 +41,7 @@ public class MinesweeperServer {
     /**
      * True if the server should _not_ disconnect a client after a BOOM message.
      */    
-    private final boolean debug;
+    private  static boolean debug;
     /**
      * MineSweeper game board
      */
@@ -54,7 +54,7 @@ public class MinesweeperServer {
      */
     public MinesweeperServer(int port, boolean debug) throws IOException {
         serverSocket = new ServerSocket(port);
-        this.debug = debug;
+        MinesweeperServer.debug = debug;
     }
 
     /**
@@ -250,5 +250,13 @@ public class MinesweeperServer {
         synchronized(lock){
             connectedPlayers--;
         }
+    }
+    
+    /**
+     * Return server running mode status. True if sever in debugging mode, otherwise in production mode. 
+     * @return
+     */
+    public static boolean isDebugging(){
+        return debug;
     }
 }

@@ -57,7 +57,8 @@ public class MinesweeperServerThread implements Runnable{
                 String output = handleRequest(line);    // respond to the Client.
                 if (output != null) {
                     out.println(output);
-                } else return; // action to close connection.
+                    if(output.equals("BOOM!!!") && !MinesweeperServer.isDebugging()) return; // close connection, server in production mode
+                } else return; // action to close connection.                  
             }
         }
     }
@@ -98,8 +99,8 @@ public class MinesweeperServerThread implements Runnable{
             MinesweeperServer.decreaseNumPlayers();
             return null;
         } else {
-            int x = Integer.parseInt(tokens[1]);
-            int y = Integer.parseInt(tokens[2]);
+            int xPos = Integer.parseInt(tokens[1]); // X cell position
+            int yPos = Integer.parseInt(tokens[2]); // y cell position
             if (tokens[0].equals("dig")) {
                 // 'dig x y' request
                 // TODO Question 5
@@ -108,18 +109,29 @@ public class MinesweeperServerThread implements Runnable{
                    then for each of x,y’s ‘untouched’ neighbor squares, change said square to ‘dug’ and
                    repeat this step (not the entire DIG procedure) recursively for said neighbor square 
                    unless said neighbor square was already dug before said change.*/
+                
+                if ((xPos >= 0 && yPos >= 0) && (xPos < board.getBoardSize()[0] && yPos < board.getBoardSize()[1])){
+                    if(board.getCellState(xPos, yPos) == '_'){
+                        board.changeCellState(xPos, yPos, ' '); 
+                        return board.getBoardState();
+                    } 
+                    else if(board.getCellState(xPos, yPos) == '1'){
+                        board.changeCellState(xPos, yPos, ' ');
+                        return "BOOM!!!";
+                    }
+                    
+                }
+               
+                return board.getBoardState(); // return unattached board state
+              
             } else if (tokens[0].equals("flag")) {
-                // 'flag x y' request
-                int xPos = Integer.parseInt(tokens[1]); // X cell position
-                int yPos = Integer.parseInt(tokens[2]); // y cell position
+                // 'flag x y' request                
                 if ((xPos >= 0 && yPos >= 0) && (xPos < board.getBoardSize()[0] && yPos < board.getBoardSize()[1])
                         && board.getCellState(xPos, yPos) == '_')board.changeCellState(xPos, yPos, 'F');
                 return board.getBoardState();
                 
             } else if (tokens[0].equals("deflag")) {
-                // 'deflag x y' request, repeated code from flag section above, usually better to extract into separate call with diff args.
-                int xPos = Integer.parseInt(tokens[1]); // X cell position
-                int yPos = Integer.parseInt(tokens[2]); // y cell position
+                // 'deflag x y' request, repeated code from flag section above, usually better to extract into separate call with diff args.                
                 if ((xPos >= 0 && yPos >= 0) && (xPos < board.getBoardSize()[0] && yPos < board.getBoardSize()[1])
                         && board.getCellState(xPos, yPos) == 'F')board.changeCellState(xPos, yPos, '_');
                 return board.getBoardState();
