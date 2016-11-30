@@ -110,7 +110,8 @@ public class MinesweeperServerThread implements Runnable{
                         return board.getBoardState();
                     } 
                     else if(board.getCellState(xPos, yPos) == 'B'){
-                        board.changeCellState(xPos, yPos, ' ');
+                        //board.changeCellState(xPos, yPos, ' ');
+                        updateBombCount(xPos, yPos);
                         return "BOOM!!!";
                     } 
                 }
@@ -179,5 +180,29 @@ public class MinesweeperServerThread implements Runnable{
             }  
         }
         
+    }
+    
+    /**
+     * Updates bomb counts in the adjacent squares after revealing the bomb.
+     * @param xPos cell position in columns >=0 and <= Board X size
+     * @param yPos cell position in rows >=0 and <= Board Y size
+     */
+    private void updateBombCount(int x, int y){
+        board.changeCellState(x, y, ' '); // reveal cell pos to 'dug'
+        int revealPos[][] = { {x, y-1} , { x+1, y-1} , {x+1, y} , {x+1, y+1}, {x, y+1} , {x-1, y+1} , {x-1, y} , {x-1, y-1} };
+        char ch;
+        for (int[] pos : revealPos) {
+            if((pos[0] >= 0 && pos[0] < board.getBoardSize()[0]) && ((pos[1] >= 0 && pos[1] < board.getBoardSize()[1]))){ // process only valid pos
+                ch = board.getCellState(pos[0], pos[1]);
+                if(ch == '1') board.changeCellState(pos[0], pos[1], ' ');
+                else if(Character.isDigit(ch)){ 
+                    // Decrement bomb count in adjacent cells
+                    int i = Character.digit(ch, 10);
+                    i--;
+                    ch = Integer.toString(i).charAt(0);
+                    board.changeCellState(pos[0], pos[1], ch);
+                }
+            }
+        }
     }
 }

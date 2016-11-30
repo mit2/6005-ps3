@@ -115,7 +115,7 @@ public class SimpleBoard implements Board{
         
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[0].length; j++) {
-                if(board[i][j] == '$') boardContent = boardContent.concat("_") + " "; // mask Bombs location for output
+                if(board[i][j] == 'B') boardContent = boardContent.concat("_") + " "; // mask Bombs location for output
                 else boardContent = boardContent.concat(board[i][j].toString()) + " ";
             }
             boardContent = boardContent.substring(0, boardContent.length()-1);  // Eliminate last in the line empty space
