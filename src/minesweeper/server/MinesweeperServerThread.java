@@ -102,24 +102,17 @@ public class MinesweeperServerThread implements Runnable{
             int xPos = Integer.parseInt(tokens[1]); // X cell position
             int yPos = Integer.parseInt(tokens[2]); // y cell position
             if (tokens[0].equals("dig")) {
-                // 'dig x y' request
-                // TODO Question 5
-                /**mutate board state, Implement Board processing logic;
-                 * If the square x,y has no neighbor squares with bombs,
-                   then for each of x,y’s ‘untouched’ neighbor squares, change said square to ‘dug’ and
-                   repeat this step (not the entire DIG procedure) recursively for said neighbor square 
-                   unless said neighbor square was already dug before said change.*/
-                
+                // 'dig x y' request              
                 if ((xPos >= 0 && yPos >= 0) && (xPos < board.getBoardSize()[0] && yPos < board.getBoardSize()[1])){
-                    if(board.getCellState(xPos, yPos) == '_'){
-                        board.changeCellState(xPos, yPos, ' '); 
+                    if(board.getCellState(xPos, yPos) == '_'){                        
+                        // Recursively reveal adjacent cells until neighbors with bombs
+                        revealCell(xPos, yPos);                        
                         return board.getBoardState();
                     } 
-                    else if(board.getCellState(xPos, yPos) == '1'){
+                    else if(board.getCellState(xPos, yPos) == 'B'){
                         board.changeCellState(xPos, yPos, ' ');
                         return "BOOM!!!";
-                    }
-                    
+                    } 
                 }
                
                 return board.getBoardState(); // return unattached board state
@@ -139,5 +132,52 @@ public class MinesweeperServerThread implements Runnable{
         }
         // Should never get here--make sure to return in each of the valid cases above.
         throw new UnsupportedOperationException();
+    }
+    
+    /**
+     * Mutate board state by revealing cells with no bombs. (Here implemented Board processing logic)
+     * If the square x,y has no neighbor squares with bombs,
+       then for each of x,y’s ‘untouched’ neighbor squares, change said square to ‘dug’ and
+       repeat this step (not the entire DIG procedure) recursively for said neighbor square 
+       unless said neighbor square was already dug before said change.
+       else if the square x,y has neighbor squares with bombs, change said square to ‘dug’ and
+       update it with number of bombs adjacent to it.
+     * @param xPos cell position in columns >=0 and <= Board X size
+     * @param yPos cell position in rows >=0 and <= Board Y size
+     */
+    private void revealCell(int x, int y){
+        /**
+         * GAME LOGIC
+         * The game is played by revealing squares of the grid by clicking or otherwise indicating each square.
+         * If a square containing a mine is revealed, the player loses the game. If no mine is revealed,
+         * a digit is instead displayed in the square, indicating how many adjacent squares contain mines;
+         * if no mines are adjacent, the square becomes blank, and all adjacent squares will be recursively
+         * revealed. The player uses this information to deduce the contents of other squares, and may either
+         * safely reveal each square or mark the square as containing a mine.
+         * 
+         * telnet localhost 4444
+         * 
+         */ 
+        
+        int count = 0;
+        //int[][] revealPos = new int[8][2]; // 8 all possible destination from cell x,y with new (x*,y*) locations.       
+        int revealPos[][] = { {x, y-1} , { x+1, y-1} , {x+1, y} , {x+1, y+1}, {x, y+1} , {x-1, y+1} , {x-1, y} , {x-1, y-1} };
+        for (int[] pos : revealPos) {
+            if((pos[0] >= 0 && pos[0] < board.getBoardSize()[0]) && ((pos[1] >= 0 && pos[1] < board.getBoardSize()[1]))){ // process only valid pos
+                if(board.getCellState(pos[0], pos[1]) == 'B') count++;
+            }
+        }        
+        if(count > 0){
+            board.changeCellState(x, y,  Character.forDigit(count, 10));
+            return; // exit recursion
+        } else {
+            board.changeCellState(x, y, ' ');
+            for (int[] pos : revealPos) {
+                if((pos[0] >= 0 && pos[0] < board.getBoardSize()[0]) && ((pos[1] >= 0 && pos[1] < board.getBoardSize()[1]))){ // recurr only on valid pos
+                    if(board.getCellState(pos[0], pos[1]) != ' ') revealCell(pos[0], pos[1]); // recurr on relative pos from x,y
+                }                
+            }  
+        }
+        
     }
 }

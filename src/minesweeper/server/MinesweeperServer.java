@@ -3,7 +3,14 @@ package minesweeper.server;
 import java.io.*;
 import java.net.*;
 import java.util.*;
-
+/** GAME LOGIC AND SYSTEM SAFETY ARGUMENT
+* The game is played by revealing squares of the grid by clicking or otherwise indicating each square.
+* If a square containing a mine is revealed, the player loses the game. If no mine is revealed,
+* a digit is instead displayed in the square, indicating how many adjacent squares contain mines;
+* if no mines are adjacent, the square becomes blank, and all adjacent squares will be recursively
+* revealed. The player uses this information to deduce the contents of other squares, and may either
+* safely reveal each square or mark the square as containing a mine.
+* /
 
 /**
  *  // System Thread safety argument
@@ -199,7 +206,7 @@ public class MinesweeperServer {
                     // get bombs locations                    
                     String[] boardRowNoSpaces = boardRow.split(" "); // Eliminate white spaces from the row
                     for (int i = 0; i < boardRowNoSpaces.length; i++) {
-                        if(boardRowNoSpaces[i].charAt(0) == '1'){
+                        if(boardRowNoSpaces[i].charAt(0) == 'B'){
                             bombLocations.add(i);   // add X location
                             bombLocations.add(line -1); // add Y location
                         }
@@ -207,10 +214,10 @@ public class MinesweeperServer {
                     line++;
                 }
                 // init board
-                board = new SimpleBoard(Integer.parseInt(numRows), Integer.parseInt(numCols), 0);
+                board = new SimpleBoard(Integer.parseInt(numRows), Integer.parseInt(numCols), bombLocations.size()/2);                
                 // insert bombs
-                for (int i = 0; i < bombLocations.size()-1; i = i + 2) { // get bomb locations incrementing by 2, as i = X, i+1 = Y
-                    board.changeCellState(bombLocations.get(i), bombLocations.get(i + 1), '1');
+                for (int i = 0; i < bombLocations.size(); i = i + 2) { // get bomb locations incrementing by 2, as i = X, i+1 = Y
+                    board.changeCellState(bombLocations.get(i), bombLocations.get(i + 1), 'B');                   
                 }        
             } catch(IOException e){
                 e.printStackTrace();
@@ -221,7 +228,7 @@ public class MinesweeperServer {
             }
         } else {
             //init board from sizes*
-            board = new SimpleBoard(sizeY, sizeX, 0);
+            board = new SimpleBoard(sizeY, sizeX, Integer.MAX_VALUE);
         }
         //System.out.println("Get board state!");
         //System.out.println(board.getBoardState());

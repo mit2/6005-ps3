@@ -13,7 +13,8 @@ import org.junit.Assert;
 public class SimpleBoard implements Board{
     private final int numRows, numCols, numBombs;
     private final Character [][] board;
-    private final Character [] validCellState = {'_',' ','F','1'};  // check size 4: cellStates.length, soon will be sorted for rep-invariant checking purposes 
+    private final Character [] validCellState = {'_',' ','F','B','1','2','3','4','5','6','7','8'};  // check size: cellStates.length, soon will be sorted for rep-invariant checking purposes
+                                                                                                    // remove 'B' from set after debugging!
     //private final List<Character> validCellState = new ArrayList<Character>(Arrays.asList(cellStates)); // not used, as list will not resized
     
     // Rep invariant
@@ -58,13 +59,10 @@ public class SimpleBoard implements Board{
         board = new Character[rows][cols];
       
         // Fill-up the Board cells with 'untouched' state; insert 'initSize' bombs in random cell locations.
-        int insertBombs = 0;
+        int insertBombs = 0; // was needed for manual insertion.
         for (int i = 0; i < board.length; i++) {
-            for (int j = 0; j < board[0].length; j++) {
-                if(randomBombInsert() && (insertBombs < numBombs)){ //  you should assign each square to contain a bomb with probability .25 and otherwise no bomb.
-                    board[i][j] = validCellState[3]; 
-                    insertBombs++;                    
-                } else if(randomBombInsert() && (insertBombs == numBombs)) { // random bomb insertion with no manual limit
+            for (int j = 0; j < board[0].length; j++) {                                 
+                if(randomBombInsert() && (numBombs == Integer.MAX_VALUE)) { // sentinel: random bomb insertion with no manual limit, you should assign each square to contain a bomb with probability .25 and otherwise no bomb.
                     board[i][j] = validCellState[3];                    
                 }
                 else board[i][j] = validCellState[0];               
@@ -73,7 +71,7 @@ public class SimpleBoard implements Board{
 
         //Arrays class contains various methods for manipulating arrays (such as sorting and searching).
         Arrays.sort(validCellState); // sort validCellState array into ascending order for checkRep() checks
-        
+
         checkRep(); // validate Board ADT
     }
 
@@ -105,7 +103,7 @@ public class SimpleBoard implements Board{
                 if(board[i][j] == 'B') countBombs++; // count bombs                
             }
         }
-        
+
         Assert.assertTrue("ASSERTION ERROR ON COUNTBOMBS!", (countBombs >= 0) && (countBombs <= numBombs)); // validate board bombs size        
     }
     
@@ -117,7 +115,8 @@ public class SimpleBoard implements Board{
         
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[0].length; j++) {
-                boardContent = boardContent.concat(board[i][j].toString()) + " ";
+                if(board[i][j] == '$') boardContent = boardContent.concat("_") + " "; // mask Bombs location for output
+                else boardContent = boardContent.concat(board[i][j].toString()) + " ";
             }
             boardContent = boardContent.substring(0, boardContent.length()-1);  // Eliminate last in the line empty space
             boardContent = boardContent + "\r\n";
