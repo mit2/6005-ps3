@@ -159,6 +159,8 @@ public class SimpleBoard implements Board{
         boardDim[0] = numCols;
         boardDim[1] = numRows;
         
+        Assert.assertTrue("ASSERTION ERROR ON X BOARD SIZE!", boardDim[0] == numCols); // Asserting post-condition
+        Assert.assertTrue("ASSERTION ERROR ON X BOARD SIZE!", boardDim[0] == numRows);
         return boardDim;
     }
 }

@@ -1,7 +1,5 @@
 package minesweeper.server;
 
-import java.util.ArrayList;
-
 /**
  * Board represents a thread safe mutable grid of characters in multi-player game 'Minesweeper'.
  * @author win8

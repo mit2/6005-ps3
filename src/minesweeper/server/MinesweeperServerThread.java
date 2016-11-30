@@ -161,8 +161,8 @@ public class MinesweeperServerThread implements Runnable{
          */ 
         
         int count = 0;
-        //int[][] revealPos = new int[8][2]; // 8 all possible destination from cell x,y with new (x*,y*) locations.       
-        int revealPos[][] = { {x, y-1} , { x+1, y-1} , {x+1, y} , {x+1, y+1}, {x, y+1} , {x-1, y+1} , {x-1, y} , {x-1, y-1} };
+        //int[][] revealPos = new int[8][2];               
+        int revealPos[][] = { {x, y-1} , { x+1, y-1} , {x+1, y} , {x+1, y+1}, {x, y+1} , {x-1, y+1} , {x-1, y} , {x-1, y-1} }; // 8 all possible destination from cell x,y with new (x*,y*) locations.
         for (int[] pos : revealPos) {
             if((pos[0] >= 0 && pos[0] < board.getBoardSize()[0]) && ((pos[1] >= 0 && pos[1] < board.getBoardSize()[1]))){ // process only valid pos
                 if(board.getCellState(pos[0], pos[1]) == 'B') count++;
@@ -188,7 +188,7 @@ public class MinesweeperServerThread implements Runnable{
      * @param yPos cell position in rows >=0 and <= Board Y size
      */
     private void updateBombCount(int x, int y){
-        board.changeCellState(x, y, ' '); // reveal cell pos to 'dug'
+        board.changeCellState(x, y, ' '); // change this cell pos to 'dug'
         int revealPos[][] = { {x, y-1} , { x+1, y-1} , {x+1, y} , {x+1, y+1}, {x, y+1} , {x-1, y+1} , {x-1, y} , {x-1, y-1} };
         char ch;
         for (int[] pos : revealPos) {

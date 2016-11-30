@@ -3,6 +3,8 @@ package minesweeper.server;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+
+import org.junit.Assert;
 /** GAME LOGIC AND SYSTEM SAFETY ARGUMENT
 * The game is played by revealing squares of the grid by clicking or otherwise indicating each square.
 * If a square containing a mine is revealed, the player loses the game. If no mine is revealed,
@@ -256,11 +258,12 @@ public class MinesweeperServer {
         // synchronize only this part of server
         synchronized(lock){
             connectedPlayers--;
+            Assert.assertTrue("ASSERTION ERROR ON connectedPlayers!",  connectedPlayers >= 0);
         }
     }
     
     /**
-     * Return server running mode status. True if sever in debugging mode, otherwise in production mode. 
+     * Return server running mode status. True if sever is in debugging mode, otherwise in production mode. 
      * @return
      */
     public static boolean isDebugging(){
