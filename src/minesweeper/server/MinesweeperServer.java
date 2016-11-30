@@ -14,8 +14,8 @@ import org.junit.Assert;
 * safely reveal each square or mark the square as containing a mine.
 * /
 
-/**
- *  // System Thread safety argument
+/***/
+  // System Thread safety argument
     // (My Note: only analyze top-level objects, not their members)
     // ----------------------
     // The threads in the system are:
@@ -33,10 +33,14 @@ import org.junit.Assert;
     // The Board object is sheared by all client threads, all accesses to 'board' happen within SimpleBoard methods,
     // which are all guarded by SimpleBoard'S lock
     //
+    // The 'connectedPlayers var is sheared by all client threads, all accesses to it happen within getConnectedPlayers(),
+    // decreaseNumPlayers() methods, which are all guarded by explicit same lock: 'lock' Object, which is locking only this part
+    // of Server for synchronized thread access.
+    //
     // System.err is used by all threads for displaying error messages.
     //
-    // No other shared mutable data.
- */
+    // No other shared mutable data.  
+ 
 public class MinesweeperServer {
     /**
      * True is server is listening for connection.

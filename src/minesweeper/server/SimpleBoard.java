@@ -6,7 +6,7 @@ import java.util.Arrays;
 import org.junit.Assert;
 
 /**
- * Ã Board represents a thread safe mutable 2D Array of character set {_, ,F,1} in multiplayer game Minesweeper.
+ * Ã Board represents a thread safe mutable 2D Array of character set {_, ,F,1-8} in multiplayer game Minesweeper.
  * @author win8
  *
  */
@@ -28,7 +28,7 @@ public class SimpleBoard implements Board{
     
     // Thread safety argument:
     // --------------------------------------------------
-    //    This class is threadsafe because it has:
+    //    This class is threadsafe because it has following:
     //    Thread safety argument with immutability:
     //    - numRows, numCols, numBombs, board, validCellState are final
     //    - 'board' points to a mutable char array, but that array is encapsulated
